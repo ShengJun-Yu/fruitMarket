@@ -147,20 +147,40 @@ public class DishController {
     }
 
     /**
-     * 根据CategoryId查询菜品分类下的菜品名字
+     * 根据CategoryId查询菜品分类下的菜品名字,添加功能要完成user页面的首页显示，返回DishDto数据
      *
      * @param dish
      * @return
      */
     @GetMapping("/list")
-    public R<List<Dish>> list(Dish dish) {
+    public R<List<DishDto>> list(Dish dish) {
         LambdaQueryWrapper<Dish> dishlqw = new LambdaQueryWrapper<>();
         dishlqw.eq(dish.getCategoryId() != null, Dish::getCategoryId, dish.getCategoryId());
         //添加条件，查询状态为1（起售状态）的菜品
-        dishlqw.eq(Dish::getStatus,1);
+        dishlqw.eq(Dish::getStatus, 1);
         //添加排序条件
         dishlqw.orderByAsc(Dish::getSort).orderByDesc(Dish::getCreateTime);
         List<Dish> list = dishService.list(dishlqw);
-        return R.success(list);
+
+        List<DishDto> dishDtoList = new ArrayList<>();
+
+//        BeanUtils.copyProperties(list, dishDtoList);
+
+        for (Dish d : list) {
+            DishDto dishDto = new DishDto();
+            BeanUtils.copyProperties(d,dishDto);
+            //添加套餐名字
+            Long categoryId = d.getCategoryId();
+            Category category = categoryService.getById(categoryId);
+            dishDto.setCategoryName(category.getName());
+//            添加口味信息
+            Long dishid = d.getId();
+            LambdaQueryWrapper<DishFlavor> dishFlavorLam = new LambdaQueryWrapper<>();
+            dishFlavorLam.eq(dishid != null, DishFlavor::getDishId, dishid);
+            List<DishFlavor> dishFlavor = dishFlavorService.list(dishFlavorLam);
+            dishDto.setFlavors(dishFlavor);
+            dishDtoList.add(dishDto);
+        }
+        return R.success(dishDtoList);
     }
 }

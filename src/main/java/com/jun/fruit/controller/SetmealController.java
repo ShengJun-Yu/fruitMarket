@@ -112,6 +112,7 @@ public class SetmealController {
 
     /**
      * 更新套餐状态
+     *
      * @param status
      * @param ids
      * @param request
@@ -139,12 +140,31 @@ public class SetmealController {
 //        setmealLam.in(Setmeal::getId, ids);
 //        setmealService.update(setmealLam);
     }
+
     /**
      * 根据id查询套餐详情，包括菜品
      */
     @GetMapping("/{id}")
-    public R<SetmealDto> get(@PathVariable Long id){
+    public R<SetmealDto> get(@PathVariable Long id) {
         SetmealDto setmealDto = setmealService.getwithDishByid(id);
         return R.success(setmealDto);
+    }
+
+    /**
+     * 根据条件查询套餐数据
+     *
+     * @param setmeal
+     * @return
+     */
+    @GetMapping("/list")
+    public R<List<Setmeal>> list(Setmeal setmeal) {
+        LambdaQueryWrapper<Setmeal> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(setmeal.getCategoryId() != null, Setmeal::getCategoryId, setmeal.getCategoryId());
+        queryWrapper.eq(setmeal.getStatus() != null, Setmeal::getStatus, setmeal.getStatus());
+        queryWrapper.orderByDesc(Setmeal::getUpdateTime);
+
+        List<Setmeal> list = setmealService.list(queryWrapper);
+
+        return R.success(list);
     }
 }

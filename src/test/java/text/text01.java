@@ -2,8 +2,7 @@ package text;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author : Bojack
@@ -22,9 +21,26 @@ public class text01 {
 
     @Test
     public void len() {
-        Map map=new HashMap();
-        map.put("phone","code");
+        Map map = new HashMap();
+        map.put("phone", "code");
         String code = (String) map.get("phone");
         System.out.println(code);
+    }
+
+    @Test
+    public void test(List<Integer> list) {
+        // 向list中添加元素
+        Iterator<Integer> iterator = list.iterator();
+        while (iterator.hasNext()) {
+            Integer item = iterator.next();
+            System.out.println(item);
+            iterator.remove();
+        }
+    }
+
+    @Test
+    public byte test11(byte l,byte w) {
+      return (byte) (l-w)
+              ;
     }
 }
